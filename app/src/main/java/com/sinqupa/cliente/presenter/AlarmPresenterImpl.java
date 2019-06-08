@@ -311,11 +311,6 @@ public class AlarmPresenterImpl implements IAlarmPresenter {
     }
 
     @Override
-    public String loadTextDistance() {
-        return String.valueOf(alarm.getDistance()) + " Metros";
-    }
-
-    @Override
     public boolean existsAlarm() {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_TAG, Context.MODE_PRIVATE);
         return sharedPreferences.contains(ALARM_TAG);
