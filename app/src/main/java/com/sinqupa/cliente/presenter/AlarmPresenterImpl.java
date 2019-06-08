@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.location.Location;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
@@ -20,6 +21,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.Toast;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -51,8 +54,8 @@ public class AlarmPresenterImpl implements IAlarmPresenter {
     private Alarm alarm = new Alarm();
     private MediaPlayer md;
     private SupportMapFragment mSupportMapFragment;
-    private static final String PREFS_TAG = "SharedPrefs";
-    private static final String ALARM_TAG = "MyAlarm";
+    private final String PREFS_TAG = "APP_PRE";
+    private final String PRODUCT_TAG = "APP_DATA";
     private Marker mDestinationMarker;
     private LatLng chooseDestination;
 
@@ -78,7 +81,6 @@ public class AlarmPresenterImpl implements IAlarmPresenter {
         alertDialog.setView(dialogLayout);
 
         ListView listViewSound = (ListView) dialogLayout.findViewById(R.id.lvSound);
-
         final ArrayAdapter<SoundObject> adapterSound = new ArrayAdapter<>(context, android.R.layout.simple_list_item_checked, loadListSound());
         listViewSound.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listViewSound.setAdapter(adapterSound);
@@ -97,7 +99,7 @@ public class AlarmPresenterImpl implements IAlarmPresenter {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 isPlayingRingtone();
-                md = MediaPlayer.create(context, adapterSound.getItem(position).getUri());
+                md = MediaPlayer.create(context, Uri.parse(adapterSound.getItem(position).getUri()));
                 md.start();
                 soundPosition = position;
             }
@@ -194,7 +196,7 @@ public class AlarmPresenterImpl implements IAlarmPresenter {
         while (alarmsCursor.moveToNext()) {
             soundObject = new SoundObject();
             soundObject.setText(ringtoneManager.getRingtone(index).getTitle(context));
-            soundObject.setUri(ringtoneManager.getRingtoneUri(index));
+            soundObject.setUri(String.valueOf(ringtoneManager.getRingtoneUri(index)));
             list.add(soundObject);
             index++;
         }
@@ -247,15 +249,15 @@ public class AlarmPresenterImpl implements IAlarmPresenter {
                     googleMap.setMyLocationEnabled(true);
                     if (existsAlarm()){
                         //Cargamos el marcador con la Ubicación
-                        //LatLng destinationPosition = new LatLng(Double.parseDouble(alarm.getLatitude()),Double.parseDouble(alarm.getLongitude()));
-                        //MarkerOptions markerOptionsDestination = new MarkerOptions();
-                        //markerOptionsDestination.position(destinationPosition);
+                        LatLng destinationPosition = new LatLng(Double.parseDouble(alarm.getLatitude()),Double.parseDouble(alarm.getLongitude()));
+                        MarkerOptions markerOptionsDestination = new MarkerOptions();
+                        markerOptionsDestination.position(destinationPosition);
                         //markerOptionsDestination.title(Utility.TITLE_MARKER_CUSTOMER);
                         //markerOptionsDestination.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_marker_house));
-                        //mDestinationMarker = map.addMarker(markerOptionsDestination);
-                        //CameraPosition cameraPosition = new CameraPosition.Builder().target(destinationPosition).zoom(19).bearing(45).tilt(70).build();
-                        //CameraUpdate zoomCam = CameraUpdateFactory.newCameraPosition(cameraPosition);
-                        //map.animateCamera(zoomCam);
+                        mDestinationMarker = map.addMarker(markerOptionsDestination);
+                        CameraPosition cameraPosition = new CameraPosition.Builder().target(destinationPosition).zoom(19).bearing(45).tilt(70).build();
+                        CameraUpdate zoomCam = CameraUpdateFactory.newCameraPosition(cameraPosition);
+                        map.animateCamera(zoomCam);
                     }else {
                         defaultUbication(map);
                     }
@@ -308,34 +310,35 @@ public class AlarmPresenterImpl implements IAlarmPresenter {
     @Override
     public void stopService() {
         context.stopService(new Intent(context, LocationUpdatesService.class));
+        TastyToast.makeText(context, "Aplicacion Detenida", TastyToast.LENGTH_LONG, TastyToast.DEFAULT);
     }
 
     @Override
     public boolean existsAlarm() {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_TAG, Context.MODE_PRIVATE);
-        return sharedPreferences.contains(ALARM_TAG);
+        return sharedPreferences.contains(PRODUCT_TAG);
     }
 
     @Override
     public List<Alarm> getDataFromSharedPreferences() {
         Gson gson = new Gson();
-        List<Alarm> alarmFromShared = new ArrayList<>();
         SharedPreferences sharedPref = context.getSharedPreferences(PREFS_TAG, Context.MODE_PRIVATE);
-        String jsonPreferences = sharedPref.getString(ALARM_TAG, "");
+        String jsonPreferences = sharedPref.getString(PRODUCT_TAG, "[]");
+
         Type type = new TypeToken<List<Alarm>>() {}.getType();
-        alarmFromShared = gson.fromJson(jsonPreferences, type);
-        return alarmFromShared;
+        return gson.fromJson(jsonPreferences, type);
     }
 
     @Override
-    public void setDataFromSharedPreferences(Alarm alarm) {
+    public void setDataFromSharedPreferences(List<Alarm> list) {
         Gson gson = new Gson();
-        String jsonCurProduct = gson.toJson(alarm);
+        String jsonString = gson.toJson(list);
+
         SharedPreferences sharedPref = context.getSharedPreferences(PREFS_TAG, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(ALARM_TAG, jsonCurProduct);
-        editor.commit();
 
+        editor.putString(PRODUCT_TAG, jsonString).apply();
+        editor.commit();
     }
 
     @Override
@@ -359,7 +362,9 @@ public class AlarmPresenterImpl implements IAlarmPresenter {
     @Override
     public void saveAlarm() {
         if (existsAlarm()){
-            setDataFromSharedPreferences(alarm);
+            List<Alarm> list = new ArrayList<>();
+            list.add(alarm);
+            setDataFromSharedPreferences(list);
             TastyToast.makeText(context, "Datos Guardados", TastyToast.LENGTH_LONG, TastyToast.SUCCESS);
         }else {
             if (validateAlarm(alarm)){
@@ -376,7 +381,9 @@ public class AlarmPresenterImpl implements IAlarmPresenter {
 
     @Override
     public boolean doSaveAlarm(Alarm alarm) {
-        setDataFromSharedPreferences(alarm);
+        List<Alarm> sparki = new ArrayList<>();
+        sparki.add(alarm);
+        setDataFromSharedPreferences(sparki);
         return existsAlarm();
     }
 
@@ -393,14 +400,37 @@ public class AlarmPresenterImpl implements IAlarmPresenter {
     public void activeSwitch(View view) {
         if (existsAlarm()){
             if (((Switch)view).isChecked()){
+                List<Alarm> list = new ArrayList<>();
+                alarm.setActived(true);
+                list.add(alarm);
+                setDataFromSharedPreferences(list);
                 startService();
             }else {
+                List<Alarm> list = new ArrayList<>();
+                alarm.setActived(false);
+                list.add(alarm);
+                setDataFromSharedPreferences(list);
                 stopService();
             }
         }else {
             if (((Switch)view).isChecked()){
                 TastyToast.makeText(context, "Guardar todos los datos", TastyToast.LENGTH_LONG, TastyToast.CONFUSING);
                 ((Switch)view).setChecked(false);
+            }
+        }
+    }
+
+    @Override
+    public void loadDataAlarm() {
+        if (existsAlarm()){
+            List<Alarm> list = getDataFromSharedPreferences();
+            for (Alarm data : list){
+                alarm.setActived(data.getActived());
+                alarm.setDistance(data.getDistance());
+                alarm.setLatitude(data.getLatitude());
+                alarm.setLongitude(data.getLongitude());
+                alarm.setUri(data.getUri());
+                alarm.setSound(data.getSound());
             }
         }
     }

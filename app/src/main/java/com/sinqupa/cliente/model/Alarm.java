@@ -1,19 +1,17 @@
 package com.sinqupa.cliente.model;
 
-import android.net.Uri;
-
 public class Alarm {
     private Integer distance;
     private boolean actived;
     private String sound;
-    private Uri uri;
+    private String uri;
     private String latitude;
     private String longitude;
 
     public Alarm() {
     }
 
-    public Alarm(Integer distance, boolean actived, String sound, Uri uri, String latitude, String longitude) {
+    public Alarm(Integer distance, boolean actived, String sound, String uri, String latitude, String longitude) {
 
         this.distance = distance;
         this.actived = actived;
@@ -47,11 +45,11 @@ public class Alarm {
         this.sound = sound;
     }
 
-    public Uri getUri() {
+    public String getUri() {
         return uri;
     }
 
-    public void setUri(Uri uri) {
+    public void setUri(String uri) {
         this.uri = uri;
     }
 

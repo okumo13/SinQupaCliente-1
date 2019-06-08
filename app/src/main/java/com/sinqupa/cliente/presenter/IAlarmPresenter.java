@@ -2,12 +2,10 @@ package com.sinqupa.cliente.presenter;
 
 import android.content.Context;
 import android.view.View;
-
 import com.google.android.gms.maps.GoogleMap;
 import com.sinqupa.cliente.model.Alarm;
 import com.sinqupa.cliente.model.DistanceObject;
 import com.sinqupa.cliente.model.SoundObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +25,11 @@ public interface IAlarmPresenter {
     void stopService();
     boolean existsAlarm();
     List<Alarm> getDataFromSharedPreferences();
-    void setDataFromSharedPreferences(Alarm alarm);
+    void setDataFromSharedPreferences(List<Alarm> list);
     void chooseUbication(GoogleMap googleMap);
     void saveAlarm();
     boolean doSaveAlarm(Alarm alarm);
     boolean validateAlarm(Alarm alarm);
     void activeSwitch(View view);
+    void loadDataAlarm();
 }

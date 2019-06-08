@@ -4,7 +4,7 @@ import android.net.Uri;
 
 public class SoundObject {
     private String text;
-    private Uri uri;
+    private String uri;
 
     public SoundObject() {
     }
@@ -17,11 +17,11 @@ public class SoundObject {
         this.text = text;
     }
 
-    public Uri getUri() {
+    public String getUri() {
         return uri;
     }
 
-    public void setUri(Uri uri) {
+    public void setUri(String uri) {
         this.uri = uri;
     }
 

@@ -5,7 +5,8 @@ import android.location.Location;
 import android.net.Uri;
 
 public class Utility {
-
+    public static Location locationCustomer;
+    public static Location locationEmployee;
     public static int distance;
     public static Uri uriNotification;
     public static final String CHANNEL_ID = "NOTIFICACION";
@@ -13,7 +14,6 @@ public class Utility {
     private static final String PACKAGE_NAME = "com.sinqupa.cliente";
     public static final String EXTRA_STARTED_FROM_NOTIFICATION = PACKAGE_NAME +".started_from_notification";
     public static final int DEFAULT_TIMEOUT = 1000;
-    public static Location locationEmployee;
     public static final int DEFAULT_INDEX_SOUND = 0;
     public static final int DEFAULT_INDEX_DISTANCE = 0;
 

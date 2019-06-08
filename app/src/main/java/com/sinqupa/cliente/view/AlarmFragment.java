@@ -36,6 +36,7 @@ public class AlarmFragment extends Fragment {
         lblDistance = (TextView)view.findViewById(R.id.lblDistance);
         swActiveAlarm.setOnClickListener(switchListener);
         alarmPresenter.getFragmentContext(container.getContext());
+        alarmPresenter.loadDataAlarm();
         return view;
     }
 
