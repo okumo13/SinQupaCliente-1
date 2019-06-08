@@ -100,9 +100,9 @@ public class LocationUpdatesService extends Service  {
 
     //Metodo para validar la Notificacion
     private void notificationMap(Location locationEmployee){
-        //if (Utility.locationCustomer != null && locationEmployee != null) {
-        float distanceInMeters = 5;
-                //  float distanceInMeters = Utility.locationCustomer.distanceTo(locationEmployee);
+        if (Utility.locationCustomer != null && locationEmployee != null) {
+        //float distanceInMeters = 5;
+            float distanceInMeters = Utility.locationCustomer.distanceTo(locationEmployee);
             Toast.makeText(getApplicationContext(),"la distancia es : " + distanceInMeters , Toast.LENGTH_SHORT).show();
             if (distanceInMeters < 6 && isFive){
                 mNotificationManager.notify(Utility.NOTIFICATION_ID, getNotification());
@@ -123,7 +123,7 @@ public class LocationUpdatesService extends Service  {
                 mNotificationManager.notify(Utility.NOTIFICATION_ID, getNotification());
                 isThirty = false;
             }
-        //}
+        }
     }
 
     private class MyTimerRunnable implements Runnable {

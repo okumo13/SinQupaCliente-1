@@ -404,6 +404,9 @@ public class AlarmPresenterImpl implements IAlarmPresenter {
                 alarm.setActived(true);
                 list.add(alarm);
                 setDataFromSharedPreferences(list);
+                Utility.locationEmployee = new Location(Utility.TITLE_MARKER_CUSTOMER);
+                Utility.locationEmployee.setLatitude(Double.parseDouble(alarm.getLatitude()));
+                Utility.locationEmployee.setLongitude(Double.parseDouble(alarm.getLongitude()));
                 startService();
             }else {
                 List<Alarm> list = new ArrayList<>();

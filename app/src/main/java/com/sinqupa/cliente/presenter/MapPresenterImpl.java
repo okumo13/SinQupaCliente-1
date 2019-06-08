@@ -21,6 +21,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.sinqupa.cliente.model.Employee;
+import com.sinqupa.cliente.model.Utility;
+
 import java.util.ArrayList;
 
 public class MapPresenterImpl implements IMapPresenter{
@@ -87,9 +89,9 @@ public class MapPresenterImpl implements IMapPresenter{
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Employee employee = snapshot.getValue(Employee.class);
 
-                    //Utility.locationEmployee = new Location(Utility.TITLE_MARKER_EMPLOYEE);
-                    //Utility.locationEmployee.setLatitude(employee.getLatitudeTravel());
-                    //Utility.locationEmployee.setLongitude(employee.getLongitudeTravel());
+                    Utility.locationEmployee = new Location(Utility.TITLE_MARKER_EMPLOYEE);
+                    Utility.locationEmployee.setLatitude(employee.getLatitudeTravel());
+                    Utility.locationEmployee.setLongitude(employee.getLongitudeTravel());
 
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(new LatLng(employee.getLatitudeTravel(),employee.getLongitudeTravel()));

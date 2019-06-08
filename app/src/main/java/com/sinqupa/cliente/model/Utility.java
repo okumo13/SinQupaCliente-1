@@ -21,6 +21,7 @@ public class Utility {
     public static final int REQUEST_PERMISSIONS_REQUEST_CODE = 101;
     public static final String PERMISSION_TEXT = "Permisos Requeridos para SinQupa";
     public static final String TITLE_MARKER_CUSTOMER = "Mi Ubicacion";
+    public static final String TITLE_MARKER_EMPLOYEE = "CARRO DE BASURA";
     //----------------- Variables para los Botones de las  Ventanas de Dialogo -----------------//
     public static final String ADD = "Agregar";
     public static final String CANCEL = "Cancelar";
