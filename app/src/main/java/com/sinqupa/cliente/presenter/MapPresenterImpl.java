@@ -43,11 +43,11 @@ public class MapPresenterImpl implements IMapPresenter{
 
     @Override
     public void loadMap(GoogleMap googleMap) {
-        final GoogleMap map = googleMap;
+        GoogleMap map = googleMap;
         if (map != null) {
             defaultUbication(map);
+            loadEmployee(map);
         }
-        loadEmployee(googleMap);
     }
 
     @SuppressLint("MissingPermission")
