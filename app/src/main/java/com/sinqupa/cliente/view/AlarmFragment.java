@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-
 import com.sinqupa.cliente.R;
 import com.sinqupa.cliente.presenter.AlarmPresenterImpl;
 import com.sinqupa.cliente.presenter.IAlarmPresenter;

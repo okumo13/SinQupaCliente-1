@@ -13,8 +13,16 @@ import android.media.AudioAttributes;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.sinqupa.cliente.R;
+import com.sinqupa.cliente.model.Employee;
 import com.sinqupa.cliente.model.Utility;
 import com.sinqupa.cliente.view.MenuActivity;
 
@@ -24,12 +32,18 @@ public class LocationUpdatesService extends Service  {
     private MyTimerRunnable runnable;
     private NotificationManager mNotificationManager;
     private boolean isFive,isTen,isFifteen,isTwenty,isTwentyFive,isThirty;
+    private DatabaseReference databaseReference;
+
+    public LocationUpdatesService() {
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+    }
 
     @Override
     public void onCreate() {
         handler = new Handler();
         runnable = new MyTimerRunnable();
 
+        /*
         if (Utility.distance != 0) {
             isFive = Utility.distance == 5 ? true : false;
             isTen = Utility.distance == 10 ? true : false;
@@ -38,6 +52,7 @@ public class LocationUpdatesService extends Service  {
             isTwentyFive = Utility.distance == 25 ? true : false;
             isThirty = Utility.distance == 30 ? true : false;
         }
+        */
 
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -99,37 +114,34 @@ public class LocationUpdatesService extends Service  {
     }
 
     //Metodo para validar la Notificacion
-    private void notificationMap(Location locationEmployee){
-        if (Utility.locationCustomer != null && locationEmployee != null) {
-        //float distanceInMeters = 5;
-            float distanceInMeters = Utility.locationCustomer.distanceTo(locationEmployee);
-            Toast.makeText(getApplicationContext(),"la distancia es : " + distanceInMeters , Toast.LENGTH_SHORT).show();
-            if (distanceInMeters < 6 && isFive){
-                mNotificationManager.notify(Utility.NOTIFICATION_ID, getNotification());
-                isFive = false;
-            }else if ((distanceInMeters < 11 && isTen)){
-                mNotificationManager.notify(Utility.NOTIFICATION_ID, getNotification());
-                isTen = false;
-            }else if (distanceInMeters < 16 && isFifteen){
-                mNotificationManager.notify(Utility.NOTIFICATION_ID, getNotification());
-                isFifteen = false;
-            }else if (distanceInMeters < 21 && isTwenty){
-                mNotificationManager.notify(Utility.NOTIFICATION_ID, getNotification());
-                isTwenty = false;
-            } else if (distanceInMeters < 26 && isTwentyFive){
-                mNotificationManager.notify(Utility.NOTIFICATION_ID, getNotification());
-                isTwentyFive = false;
-            }else if (distanceInMeters < 31 && isThirty){
-                mNotificationManager.notify(Utility.NOTIFICATION_ID, getNotification());
-                isThirty = false;
+    private void validateNotification(final Location locationCustomer){
+        databaseReference.child("Employee").orderByChild("activated").equalTo(true).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Employee employee = snapshot.getValue(Employee.class);
+                    Location locationEmployee = new Location(Utility.TITLE_MARKER_EMPLOYEE);
+                    locationEmployee.setLongitude(employee.getLongitudeTravel());
+                    locationEmployee.setLatitude(employee.getLatitudeTravel());
+                    float distanceTravel = locationCustomer.distanceTo(locationEmployee);
+
+                    if ( distanceTravel >= (Utility.distance - 1)  && distanceTravel <= (Utility.distance + 1)){
+                        mNotificationManager.notify(Utility.NOTIFICATION_ID, getNotification());
+                    }
+                }
             }
-        }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private class MyTimerRunnable implements Runnable {
         @Override
         public void run() {
-            notificationMap(Utility.locationEmployee);
+            validateNotification(Utility.locationCustomer);
             handler.postDelayed(this, Utility.DEFAULT_TIMEOUT);
         }
     }

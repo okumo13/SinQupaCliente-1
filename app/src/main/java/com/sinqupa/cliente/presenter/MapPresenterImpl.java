@@ -85,14 +85,8 @@ public class MapPresenterImpl implements IMapPresenter{
                 for (Marker marker : realTimeMarkers){
                     marker.remove();
                 }
-
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Employee employee = snapshot.getValue(Employee.class);
-
-                    Utility.locationEmployee = new Location(Utility.TITLE_MARKER_EMPLOYEE);
-                    Utility.locationEmployee.setLatitude(employee.getLatitudeTravel());
-                    Utility.locationEmployee.setLongitude(employee.getLongitudeTravel());
-
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(new LatLng(employee.getLatitudeTravel(),employee.getLongitudeTravel()));
                     tmpRealTimeMarkers.add(googleMap.addMarker(markerOptions));

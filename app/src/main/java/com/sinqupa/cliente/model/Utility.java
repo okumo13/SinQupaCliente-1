@@ -6,7 +6,6 @@ import android.net.Uri;
 
 public class Utility {
     public static Location locationCustomer;
-    public static Location locationEmployee;
     public static int distance;
     public static Uri uriNotification;
     public static final String CHANNEL_ID = "NOTIFICACION";
