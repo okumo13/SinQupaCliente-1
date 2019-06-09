@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.location.Location;
 import android.media.AudioAttributes;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -42,23 +43,11 @@ public class LocationUpdatesService extends Service  {
     public void onCreate() {
         handler = new Handler();
         runnable = new MyTimerRunnable();
-
-        /*
-        if (Utility.distance != 0) {
-            isFive = Utility.distance == 5 ? true : false;
-            isTen = Utility.distance == 10 ? true : false;
-            isFifteen =  Utility.distance == 15 ? true : false;
-            isTwenty = Utility.distance == 20 ? true : false;
-            isTwentyFive = Utility.distance == 25 ? true : false;
-            isThirty = Utility.distance == 30 ? true : false;
-        }
-        */
-
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.app_name);
             NotificationChannel mChannel = new NotificationChannel(Utility.CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
-            mChannel.setSound(Utility.uriNotification,new AudioAttributes.Builder()
+            mChannel.setSound(Uri.parse(Utility.uriNotification),new AudioAttributes.Builder()
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                     .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
                     .build());
@@ -104,7 +93,7 @@ public class LocationUpdatesService extends Service  {
         builder.setWhen(System.currentTimeMillis());
         builder.setVibrate(new long[]{1000,1000,1000,1000,1000});
         builder.setPriority(Notification.PRIORITY_HIGH);
-        builder.setSound(Utility.uriNotification);
+        builder.setSound(Uri.parse(Utility.uriNotification));
         builder.setOngoing(true);
 
         // Set the Channel ID for Android O.

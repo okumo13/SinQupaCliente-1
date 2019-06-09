@@ -7,7 +7,7 @@ import android.net.Uri;
 public class Utility {
     public static Location locationCustomer;
     public static int distance;
-    public static Uri uriNotification;
+    public static String uriNotification;
     public static final String CHANNEL_ID = "NOTIFICACION";
     public static final int NOTIFICATION_ID = 1008;
     private static final String PACKAGE_NAME = "com.sinqupa.cliente";
