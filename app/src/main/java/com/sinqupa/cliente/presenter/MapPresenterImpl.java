@@ -10,6 +10,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -20,9 +21,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.sinqupa.cliente.R;
 import com.sinqupa.cliente.model.Employee;
 import com.sinqupa.cliente.model.Utility;
-
 import java.util.ArrayList;
 
 public class MapPresenterImpl implements IMapPresenter{
@@ -41,10 +42,14 @@ public class MapPresenterImpl implements IMapPresenter{
         this.databaseReference = databaseReference;
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void loadMap(GoogleMap googleMap) {
         GoogleMap map = googleMap;
         if (map != null) {
+            googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            googleMap.setMyLocationEnabled(true);
+            googleMap.getUiSettings().setZoomControlsEnabled(true);
             defaultUbication(map);
             loadEmployee(map);
         }
@@ -53,18 +58,16 @@ public class MapPresenterImpl implements IMapPresenter{
     @SuppressLint("MissingPermission")
     @Override
     public void defaultUbication(final GoogleMap googleMap) {
-        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        googleMap.setMyLocationEnabled(true);
         FusedLocationProviderClient mFusedLocationClient =  LocationServices.getFusedLocationProviderClient((FragmentActivity)context);
         mFusedLocationClient.getLastLocation().addOnSuccessListener((FragmentActivity)context, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
                 LatLng originPosition = new  LatLng(location.getLatitude(),location.getLongitude());
-                MarkerOptions markerOptionsDestination = new MarkerOptions();
-                markerOptionsDestination.position(originPosition);
-                //markerOptionsDestination.title(Utility.TITLE_MARKER_EMPLOYEE);
-                //markerOptionsDestination.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_marker_house));
-                //mDestinationMarker = mGoogleMap.addMarker(markerOptionsDestination);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(originPosition);
+                markerOptions.title(Utility.TITLE_MARKER_CUSTOMER);
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_person));
+                googleMap.addMarker(markerOptions);
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(originPosition).zoom(19).bearing(45).tilt(70).build();
                 CameraUpdate zoomCam = CameraUpdateFactory.newCameraPosition(cameraPosition);
                 googleMap.animateCamera(zoomCam);
@@ -72,7 +75,6 @@ public class MapPresenterImpl implements IMapPresenter{
         }).addOnFailureListener((FragmentActivity)context, new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-
             }
         });
     }
@@ -89,6 +91,7 @@ public class MapPresenterImpl implements IMapPresenter{
                     Employee employee = snapshot.getValue(Employee.class);
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(new LatLng(employee.getLatitudeTravel(),employee.getLongitudeTravel()));
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_basura));
                     tmpRealTimeMarkers.add(googleMap.addMarker(markerOptions));
                 }
                 realTimeMarkers.clear();
