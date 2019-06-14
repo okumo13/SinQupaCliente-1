@@ -22,6 +22,8 @@ public class AlarmFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_alarm,container,false);
+        lblSound = (TextView)view.findViewById(R.id.lblSound);
+        lblDistance = (TextView)view.findViewById(R.id.lblDistance);
         btnSaveAlarm = (Button)view.findViewById(R.id.btnSaveAlarm);
         lytSoundAlarm = (LinearLayout)view.findViewById(R.id.lytSoundAlarm);
         lytDistanceAlarm = (LinearLayout)view.findViewById(R.id.lytDistanceAlarm);
@@ -31,8 +33,6 @@ public class AlarmFragment extends Fragment {
         lytSoundAlarm.setOnClickListener(soundListener);
         lytDistanceAlarm.setOnClickListener(distanceListener);
         lytUbicationAlarm.setOnClickListener(ubicationListener);
-        lblSound = (TextView)view.findViewById(R.id.lblSound);
-        lblDistance = (TextView)view.findViewById(R.id.lblDistance);
         swActiveAlarm.setOnClickListener(switchListener);
         alarmPresenter.getFragmentContext(container.getContext());
         alarmPresenter.loadDataAlarm();

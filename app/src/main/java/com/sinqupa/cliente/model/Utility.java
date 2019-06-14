@@ -5,6 +5,7 @@ import android.location.Location;
 import android.net.Uri;
 
 public class Utility {
+
     public static Location locationCustomer;
     public static int distance;
     public static String uriNotification;
@@ -26,6 +27,7 @@ public class Utility {
     public static final String CANCEL = "Cancelar";
     public static final String OK = "Ok";
     //----------------- Fin Variables para los Botones de las  Ventanas de Dialogo -----------------//
+
 
 
 }
